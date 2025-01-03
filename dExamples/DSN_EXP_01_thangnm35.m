@@ -17,6 +17,8 @@ addpath('..\aFunctions\');
 addpath('..\bFunctions\');
 addpath('..\iPatterns\');
 % Load a 3nd Order LPDSM 3-bit pattern for testing purpose
+
+%thangnm35: simulateDSM to get the stimuli bits
 sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
 
 % Design input parameters

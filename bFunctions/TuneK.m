@@ -3,7 +3,7 @@ function data = TuneK(varargin)
 %
 % [min_RT min_stage] = TuneK(Fs, OSR, delta_F, rp, rc, Stages, plot_RT, POT) 
 %
-% Thsi function estimate the computational effort due to number of
+% This function estimate the computational effort due to number of
 % decimation stages. It exports the min computational effort, the
 % crossponding decimation value for each stage as a vector, and a matrix
 % holding the computational effort and the crossponding decimation factor
@@ -106,7 +106,7 @@ end
             end
                 ylabel('RT - MADS');
                 set(gca, 'XTick', [1:sum(x)], 'XTicklabel', []);
-                legend([plot2stages,plot3stages,plot4stages], '2 Stages', '3 Stages', '4 Stages',2)
+                legend([plot2stages,plot3stages,plot4stages], '2 Stages', '3 Stages', '4 Stages')%,'NorthWest')
         end
     end
     
