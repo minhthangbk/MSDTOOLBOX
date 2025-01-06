@@ -31,38 +31,38 @@ data.quantization_coefficients=[];
 K = length(data.filter_lengths);
 m=1;
 
-for a = 1 : K,
+for a = 1 : K
    filter_coeff_tmp = data.filter_coefficients(a, 1:data.filter_lengths(a));
    [quantized_coeff_temporary((a-1)*q_length+1:a*q_length,1:data.filter_lengths(a)) Sn_temporary((a-1)*q_length+1:a*q_length,1:data.filter_lengths(a))] = FilterCoefficientSensitivity(filter_coeff_tmp, data.Q(a,:), data.Fs, 0, data.plot_freq_response, data.plot_Sn);
 end
 
 q_vector=zeros(1,q_length*K);
 
-for b = 1 : K,
+for b = 1 : K
     q_vector(q_length*(b-1)+1 : b*q_length) = data.Q(b,1:q_length);
 end
 
-if K == 2,
-    for i = 1 : q_length,
-        for j = 1 : q_length,
+if K == 2
+    for i = 1 : q_length
+        for j = 1 : q_length
                 index((m-1)*K+1:m*K) = [i j+q_length];
                 m=m+1;
         end
     end
-elseif K == 3,
-    for i = 1 : q_length,
-        for j = 1 : q_length,
-            for k = 1 : q_length,
+elseif K == 3
+    for i = 1 : q_length
+        for j = 1 : q_length
+            for k = 1 : q_length
                 index((m-1)*K+1:m*K) = [i j+q_length k+(2*q_length)];
                 m=m+1;
             end
         end
     end
-elseif K == 4,
-    for i = 1 : q_length,
-        for j = 1 : q_length,
-            for k = 1 : q_length,
-                for l = 1 : q_length,
+elseif K == 4
+    for i = 1 : q_length
+        for j = 1 : q_length
+            for k = 1 : q_length
+                for l = 1 : q_length
                     index((m-1)*K+1:m*K) = [i j+q_length k+(2*q_length) l+(3*q_length)];
                     m=m+1;
                 end
@@ -71,7 +71,7 @@ elseif K == 4,
     end
 end
 
-for w = 1 : length(index),
+for w = 1 : length(index)
     data.quantized_filter_coefficients(w,:)=quantized_coeff_temporary(index(w),:);
     data.Sn(w,:) = Sn_temporary(index(w),:); 
     data.quantization_coefficients(w) = q_vector(index(w));
@@ -133,7 +133,7 @@ function data = ChkString(data,args,string,type,err_msg)
 
 pos = find(strcmp(args,string),1);
 if isempty(pos)
-elseif ~isa(args{pos+1},type),
+elseif ~isa(args{pos+1},type)
     error(['Syntax error::',err_msg])
 else
     data.(string)=args{pos+1};

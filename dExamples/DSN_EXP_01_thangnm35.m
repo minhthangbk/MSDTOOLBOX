@@ -20,7 +20,12 @@ addpath('..\iPatterns\');
 
 %thangnm35: simulateDSM to get the stimuli bits
 %sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
-loaded_sdm_data     = load('D:\THANG\MATLAB_WORKSPACE\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
+at_home = 1;
+if at_home == 1
+    loaded_sdm_data     = load('D:\THANG\GIT\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
+else
+    loaded_sdm_data     = load('D:\THANG\MATLAB_WORKSPACE\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
+end
 sdm_data            = loaded_sdm_data.d;
 % Design input parameters
 % Fs          = 640e3;%3.2e9;%        % Sampling frequency
@@ -44,7 +49,7 @@ IBN_penalty     = -4;       % Acceptable penalty in IBN after deciamtion,
                             % e.g.
                             % -70 - (-66) = -4dB
 Sig_penalty     = 0.5;      % Acceptable penalty in the signal peak,
-                            % Sig_penalty = Signal peak'before deciamtion'-Signal peak'after deciamtion'
+                            % Sig_penalty = Signal peak'before decimation'-Signal peak'after deciamtion'
                             % e.g.
                             % -3dB - (-3.2) = 0.2dB
                             
@@ -57,7 +62,7 @@ Pass_Stop   = false;        % Flag to determine that base-band frequency is cons
                             % passband or stopband frequency corner.
                             % false -> Pass
                             % true  -> Stop
-q           = [[18 16 14 12 10 8]; [18 16 14 12 10 8]];
+q           = [[18 16 14 13 12 10 8]; [18 16 14 13 12 10 8]];
                             % This matrix holds the quantization bit widths
                             % for each decimation stages, since , in this
                             % example, the first row for the first stage
@@ -123,8 +128,8 @@ Print_KM(K, M);
 dataTuneR = TuneR('sdm_data', sdm_data, 'rpb_tune', rp_tune, 'rsb_tune',rc_tune, 'Fs',  Fs, 'OSR', OSR, 'delta_F', delta_F, 'Fsignal', Fsignal, 'K', K, 'M', M, 'Filter_Type', Filter_Type, 'mb_type', mb_type, 'Pass_Stop', Pass_Stop, 'IBN_penalty', IBN_penalty);
 
 % 
-fprintf('rp  --  rc  --   differencr in IBN\n');
-for i = 1 : size(dataTuneR.accepted_ripples, 1),    
+fprintf('rp  --  rc  --   difference in IBN\n');
+for i = 1 : size(dataTuneR.accepted_ripples, 1)    
     fprintf('%2.4f  %3.4f   %3.4f      \n', dataTuneR.accepted_ripples(i,:));
 end
 % Analyzing the output from the previous step, we get the following table;
@@ -142,11 +147,14 @@ rp = 0.001;
 rc = 0.001;
 
 % Design the decimation stages due to the input parameters and constrains [filter_coefficients, filter_lengths]
-dataDecimationFilters = DecimationFilters('Fs', Fs, 'OSR', OSR, 'K', K, 'M', M, 'delta_F', delta_F, 'rp', rp, 'rc', rc, 'Filter_Type', Filter_Type, 'mb_type', mb_type, 'Pass_Stop', Pass_Stop, 'plot_filter_response', plot_filter_response);
+dataDecimationFilters = DecimationFilters('Fs', Fs, 'OSR', OSR, 'K', K, 'M', M, 'delta_F', delta_F, 'rp', rp, 'rc', rc, ...
+    'Filter_Type', Filter_Type, 'mb_type', mb_type, 'Pass_Stop', Pass_Stop, 'plot_filter_response', plot_filter_response);
 
 % Filter and downsample the LPDSM data using the designed decimation stages
 % in the previous step
-[deci_data IBN] = FilterAndDownsample(dataDecimationFilters.filter_coefficients, dataDecimationFilters.filter_lengths, sdm_data, Fs, OSR, Fsignal, K, M, plot_psd, export_IBN, print_IBN);
+[deci_data, IBN] = FilterAndDownsample(dataDecimationFilters.filter_coefficients, ...
+    dataDecimationFilters.filter_lengths, ...
+    sdm_data, Fs, OSR, Fsignal, K, M, plot_psd, export_IBN, print_IBN);
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -157,7 +165,9 @@ dataDecimationFilters = DecimationFilters('Fs', Fs, 'OSR', OSR, 'K', K, 'M', M, 
 % quantized filter coefficients for each decimation stage and the
 % coefficient sensitvity   [quantized_filter_coefficients Sn
 % quantization_coefficients]
-dataDecimatorQuantizationCoefficientSensitivity = DecimatorQuantizationCoefficientSensitivity('filter_coefficients', dataDecimationFilters.filter_coefficients, 'filter_lengths', dataDecimationFilters.filter_lengths, 'Q', q, 'Fs', Fs, 'plot_freq_response', plot_freq_response, 'plot_Sn', plot_Sn);
+dataDecimatorQuantizationCoefficientSensitivity = DecimatorQuantizationCoefficientSensitivity('filter_coefficients', dataDecimationFilters.filter_coefficients, ...
+    'filter_lengths', dataDecimationFilters.filter_lengths, ...
+    'Q', q, 'Fs', Fs, 'plot_freq_response', plot_freq_response, 'plot_Sn', plot_Sn);
 
 
 % This function test the quantization effect of the filter coefficients, by
@@ -174,7 +184,7 @@ TestQuantizedFiltersIBNSig(dataDecimatorQuantizationCoefficientSensitivity.quant
 % Analyzing the output table on the command window, we can obserev is those
 % 2 values satisfy the penalties range and support optimal bit width for
 % coefficient quantization.
-Q = [14 12];
+Q = [14 13];
 dataNormalizedCoefficients = NormalizedCoefficients('filter_coefficients', dataDecimationFilters.filter_coefficients, 'filter_lengths', dataDecimationFilters.filter_lengths, 'Q', Q, 'K', K);
 
 % This function exports the IBN after each decimation stage using the fixed
@@ -182,5 +192,5 @@ dataNormalizedCoefficients = NormalizedCoefficients('filter_coefficients', dataD
 IBN_norm = TestDecimatorIBN(Fs, OSR, Fsignal, K, M, dataNormalizedCoefficients.normalized_filter_coeff, dataDecimationFilters.filter_lengths, sdm_data)
 % 
 % % Export the fixed point filter coefficients into text files
-% dlmwrite('./Exported_Coefficients/First_Stage_Coeffs_640kHz.txt', normalized_filter_coeff(1,:), ';');
-% dlmwrite('./Exported_Coefficients/Second_Stage_Coeffs_640kHz.txt', normalized_filter_coeff(2,:), ';');
+writematrix(dataNormalizedCoefficients.normalized_filter_coeff(1,:), 'First_Stage_Coeffs.txt', 'Delimiter', ';');
+writematrix(dataNormalizedCoefficients.normalized_filter_coeff(2,:), 'Second_Stage_Coeffs.txt', 'Delimiter', ';');
