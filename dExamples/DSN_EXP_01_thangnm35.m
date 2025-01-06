@@ -19,12 +19,17 @@ addpath('..\iPatterns\');
 % Load a 3nd Order LPDSM 3-bit pattern for testing purpose
 
 %thangnm35: simulateDSM to get the stimuli bits
-sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
-
+%sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
+loaded_sdm_data     = load('D:\THANG\MATLAB_WORKSPACE\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
+sdm_data            = loaded_sdm_data.d;
 % Design input parameters
-Fs          = 640e3;%3.2e9;%        % Sampling frequency
+% Fs          = 640e3;%3.2e9;%        % Sampling frequency
+% OSR         = 16;           % Over Sampling Frequency
+% Fsignal     = 5e3;          % Input signal frequency
+
+Fs          = 3.2e9;%        % Sampling frequency
 OSR         = 16;           % Over Sampling Frequency
-Fsignal     = 5e3;          % Input signal frequency
+Fsignal     = 107421875;%100e6;          % Input signal frequency
 
 delta_F     = 0.05;         % Transition bandwidth = (cutoff band-pass band)/cutoff band
 rp_tune     = [0.00005 0.0001 0.0005 0.001 0.005 0.01 0.05 0.1];        % Passband ripples
@@ -75,9 +80,9 @@ print_IBN            = true;% Flag to print the IBN before and after decimation 
                             % 1 -> print, 0 -> don't print1
 plot_RT              = true;% Flag to plot the computation effort bar diagram, where
                             % 1 -< Plot, 0 -> don't plot
-plot_freq_response   = false;% Flag to plot the filter frequency response with quantization effect, where
+plot_freq_response   = true;% Flag to plot the filter frequency response with quantization effect, where
                             % 1 -> Plot, 0 -> don't plot
-plot_Sn              = false;   % Flag to plot the filter coefficient sensitvity, where
+plot_Sn              = true;   % Flag to plot the filter coefficient sensitvity, where
                             % 0 -> don't plot, 1 -> plot 
 print_Sig            = true;% Flag to print the signal peak before and after decimation proces, where
                             % 1 -> Print, 0 -> don't print
