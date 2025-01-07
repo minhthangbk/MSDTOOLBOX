@@ -104,7 +104,7 @@ end
                     hold on
                     set(gca, 'XTickLabel', 'Stages')
             end
-                ylabel('RT - MADS');
+                ylabel('RT - MADS'); grid on;
                 set(gca, 'XTick', [1:sum(x)], 'XTicklabel', []);
                 legend([plot2stages,plot3stages,plot4stages], '2 Stages', '3 Stages', '4 Stages')%,'NorthWest')
         end

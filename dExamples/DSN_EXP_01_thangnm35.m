@@ -20,7 +20,7 @@ addpath('..\iPatterns\');
 
 %thangnm35: simulateDSM to get the stimuli bits
 %sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
-at_home = 1;
+at_home = 0;
 if at_home == 1
     loaded_sdm_data     = load('D:\THANG\GIT\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
 else
@@ -125,7 +125,8 @@ Print_KM(K, M);
 % easiest values is to set K = 2 and M = [OSR/2 2].
 %accepted_ripples = TuneR(rp_tune, rc_tune, Fs, OSR, delta_F, Fsignal, K, M, Filter_Type, mb_type, sdm_data, IBN_penalty);
 
-dataTuneR = TuneR('sdm_data', sdm_data, 'rpb_tune', rp_tune, 'rsb_tune',rc_tune, 'Fs',  Fs, 'OSR', OSR, 'delta_F', delta_F, 'Fsignal', Fsignal, 'K', K, 'M', M, 'Filter_Type', Filter_Type, 'mb_type', mb_type, 'Pass_Stop', Pass_Stop, 'IBN_penalty', IBN_penalty);
+dataTuneR = TuneR('sdm_data', sdm_data, 'rpb_tune', rp_tune, 'rsb_tune',rc_tune, 'Fs',  Fs, 'OSR', OSR, 'delta_F', delta_F, 'Fsignal', ...
+    Fsignal, 'K', K, 'M', M, 'Filter_Type', Filter_Type, 'mb_type', mb_type, 'Pass_Stop', Pass_Stop, 'IBN_penalty', IBN_penalty);
 
 % 
 fprintf('rp  --  rc  --   difference in IBN\n');
@@ -174,7 +175,8 @@ dataDecimatorQuantizationCoefficientSensitivity = DecimatorQuantizationCoefficie
 % examining the its effect on IBn and Signal peak. It exports the
 % quantization bitwidth for each stage and its effect on the IBN and Signal
 % peak
-TestQuantizedFiltersIBNSig(dataDecimatorQuantizationCoefficientSensitivity.quantized_filter_coefficients, dataDecimationFilters.filter_lengths, dataDecimatorQuantizationCoefficientSensitivity.quantization_coefficients, sdm_data, Fs, OSR, Fsignal, K, M, q, 0, export_IBN, 0, print_Sig, IBN_penalty, Sig_penalty);
+TestQuantizedFiltersIBNSig(dataDecimatorQuantizationCoefficientSensitivity.quantized_filter_coefficients, dataDecimationFilters.filter_lengths, ...
+    dataDecimatorQuantizationCoefficientSensitivity.quantization_coefficients, sdm_data, Fs, OSR, Fsignal, K, M, q, 0, export_IBN, 0, print_Sig, IBN_penalty, Sig_penalty);
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,7 +186,7 @@ TestQuantizedFiltersIBNSig(dataDecimatorQuantizationCoefficientSensitivity.quant
 % Analyzing the output table on the command window, we can obserev is those
 % 2 values satisfy the penalties range and support optimal bit width for
 % coefficient quantization.
-Q = [14 13];
+Q = [14 13]; %select by observed data
 dataNormalizedCoefficients = NormalizedCoefficients('filter_coefficients', dataDecimationFilters.filter_coefficients, 'filter_lengths', dataDecimationFilters.filter_lengths, 'Q', Q, 'K', K);
 
 % This function exports the IBN after each decimation stage using the fixed
