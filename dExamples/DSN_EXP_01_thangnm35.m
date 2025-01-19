@@ -114,6 +114,8 @@ rc = 0.005;
 dataTuneK = TuneK('Fs', Fs, 'OSR', OSR, 'delta_F', delta_F, 'rp', rp, 'rc', rc, 'Stages', Stages, 'POT', POT, 'plot_RT', plot_RT);
 
 % Pass K and M to the design functions
+%   K:                     Number of decimation stages
+%   M:                     Decimation vector for decimation factor at each stage
 K   = length(dataTuneK.min_stage);
 M   = dataTuneK.min_stage;
 
@@ -194,7 +196,7 @@ TestQuantizedFiltersIBNSig(dataDecimatorQuantizationCoefficientSensitivity.quant
 % Analyzing the output table on the command window, we can obserev is those
 % 2 values satisfy the penalties range and support optimal bit width for
 % coefficient quantization.
-Q = [14 13]; %select by observed data
+Q = [13 14]; %select by observed data
 dataNormalizedCoefficients = NormalizedCoefficients('filter_coefficients', dataDecimationFilters.filter_coefficients, 'filter_lengths', dataDecimationFilters.filter_lengths, 'Q', Q, 'K', K);
 
 % This function exports the IBN after each decimation stage using the fixed
