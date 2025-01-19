@@ -6,9 +6,9 @@ function [f, a, w, lengths] = MultiBandFilters(K, M, OSR, type)
 % This function design multi-band filters according to the input
 % constarints. It supports two differnt types:
 % 'NB' ->   In this type the filter design in the case of multi-stage will
-%           be dependent on each stage, i.e., each stage will has its 
-%           influence on the rest of the stages. Besides it has a narrow 
-%           bandwidth  
+%           be dependent on each stage, i.e., each stage will has its
+%           influence on the rest of the stages. Besides it has a narrow
+%           bandwidth
 %           Example:
 %           K       = 3;
 %           M       = [8 4 2];
@@ -19,10 +19,10 @@ function [f, a, w, lengths] = MultiBandFilters(K, M, OSR, type)
 %           .
 %           and so on
 %           As it can be observed the band here is 1/OSR
-% 
+%
 % 'WB' ->   In this type the filter design in the case of multi-stage will
-%           be independent on each stage, i.e., each stage will has 
-%           no influence on the rest of the stages. 
+%           be independent on each stage, i.e., each stage will has
+%           no influence on the rest of the stages.
 %           Example:
 %           K       = 3;
 %           M       = [8 4 2];
@@ -43,6 +43,7 @@ function [f, a, w, lengths] = MultiBandFilters(K, M, OSR, type)
 %               'WB' Wide Band
 %
 %       [f, a, w]: Exported parameters for remez|firpm Matlab function
+%       f: cutoff frequency; a: desired amplitude at the point specified in f; w: weights
 %       lengths:   Defines the frequency band length for each filter stage,
 %                  it is only used by the function named 'DecimationFilters'
 
@@ -56,6 +57,7 @@ if strcmp(type, 'NB')
             if l == 1
                 f(k,l) = 0;
                 a(k,l)=1;
+                
             else if l == 2
                     f(k,l) = 1/OSR;
                     a(k,l)=1;
@@ -107,17 +109,17 @@ elseif strcmp(type,'WB')
         end
     end
 end
-    
-        
-   c0 = 0.00000048003; % Added 00
-   
-   for m = 1 : K-1
-       x=0;
-            for x = 1 : max(lengths)/2
-                wi(m,x) = c0/(2*sin(pi*f(m,2+x)/2))^3;
-                x = x + 2;
-            end
-       wi(m,1)=0.00001; %% Changed 0.001
-   end
 
-    w = 1./wi;
+
+c0 = 0.00000048003; % Added 00
+
+for m = 1 : K-1
+    x=0;
+    for x = 1 : max(lengths)/2
+        wi(m,x) = c0/(2*sin(pi*f(m,2+x)/2))^3;
+        x = x + 2;
+    end
+    wi(m,1)=0.00001; %% Changed 0.001
+end
+
+w = 1./wi;

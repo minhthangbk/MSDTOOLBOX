@@ -38,9 +38,9 @@ function [deci_data IBN Sig] = FilterAndDownsample(filter_coefficients, filter_l
 filter_downsample = struct('filter_data', [], 'downsample_data', []);
 
 
-for i = 1 : K,
+for i = 1 : K
 %     if max(abs(filter_coefficients(i,:))) < 1,
-        if i == 1,
+        if i == 1
             filter_downsample(i).filter_data = filter(filter_coefficients(i,1:filter_lengths(i)), [1], sdm_data);
             filter_downsample(i).downsample_data = downsample(filter_downsample(i).filter_data, M(i));
         else
@@ -61,7 +61,7 @@ end
 deci_data = filter_downsample(K).downsample_data;
 
 % Estimate the IBN before and after decimation
-if (nargin == 10 | nargin == 11 | nargin == 12) & export_IBN == 1,
+if (nargin == 10 | nargin == 11 | nargin == 12) & export_IBN == 1
     Fb=Fs/(2*OSR);         
     sdmdata                         = plotFunction(sdm_data,'OSR',OSR,'fsig',Fsignal,'stats',true,'no_nz_bins',20,'plot_fft',false,'fs',Fs);
     IBN_DSM = sdmdata.P_IBN_dB;
@@ -75,10 +75,10 @@ else
     IBN = [nan nan];
 end
 
-if print_IBN == 1,
+if print_IBN == 1
         fprintf('\n');
         fprintf('The IBN before decimation = %f\n The IBN after decimation = %f\n', IBN);
-        if nargin == 12 & print_Sig == 1,
+        if nargin == 12 & print_Sig == 1
             fprintf('The Signal Peak before decimation = %f\n The Signal Peak after decimation = %f\n', Sig);
             fprintf('\n');
         end
@@ -112,7 +112,7 @@ end
 
 
 % Plot PSD before and after decimation
-if (nargin == 9 | nargin == 10 | nargin == 11 | nargin == 12) & plot_psd == 1,
+if (nargin == 9 | nargin == 10 | nargin == 11 | nargin == 12) & plot_psd == 1
     FIG = figure('Name', 'Power Spectral Density', 'NumberTitle' , 'off');
     plotFunction(sdm_data,'OSR',OSR,'fsig',Fsignal,'stats',true,'no_nz_bins',20,'fs',Fs);
     hold on

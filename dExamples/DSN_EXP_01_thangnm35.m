@@ -26,7 +26,7 @@ addpath('..\iPatterns\');
 
 %thangnm35: simulateDSM to get the stimuli bits
 %sdm_data    = load('iPatterns/OSR16_3bit_640kHz.txt');%OSRx_nbitsComparator_Fs
-at_home = 0;
+at_home = 1;
 if at_home == 1
     loaded_sdm_data     = load('D:\THANG\GIT\CT_SDM_ADC_MATLAB_FINAL_V2022B\sdm_ciff_osr16_bw100MHz_Fs3200.mat');
 else
@@ -77,7 +77,7 @@ q           = [[18 16 14 13 12 10 8]; [18 16 14 13 12 10 8]];
                             % stage, the number of columns suppose to be
                             % equivelent to the number of decimation stages
 
-POT                  = false;   % Flag used for the generation of the decimation factor, to constrain it to a 
+POT                  = true;   % Flag used for the generation of the decimation factor, to constrain it to a 
                             % Power-Of-Two 'POT' factors or not   
 plot_filter_response = true;% Flag to plot the frequency response of each decimation stage
                             % 1 -> Plot, 0 -> don't plot
@@ -117,6 +117,7 @@ dataTuneK = TuneK('Fs', Fs, 'OSR', OSR, 'delta_F', delta_F, 'rp', rp, 'rc', rc, 
 K   = length(dataTuneK.min_stage);
 M   = dataTuneK.min_stage;
 
+% print Optimal number of decimation stages
 Print_KM(K, M);
 %%
 

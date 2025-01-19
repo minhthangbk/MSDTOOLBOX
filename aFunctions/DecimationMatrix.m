@@ -25,18 +25,18 @@ columns = [];
 p = 0;
 
 % Single Stage decimation
-if Stages == 1,
+if Stages == 1
     m=M;
     
 % Two stages decimation    
-elseif Stages==2,
+elseif Stages==2
     m=[M/2,2];
     
 % Three stages decimation 
-else if Stages ==3 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1,
+else if Stages ==3 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1
     p=log2(M);
     rows=zeros;
-    if mod(p,2)==1,
+    if mod(p,2)==1
         rows=fix(p/2);
     else
         rows=p/2-1;
@@ -45,26 +45,26 @@ else if Stages ==3 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1,
     columns=Stages;
     matrix=zeros(rows,columns);
     
-    for j=1:rows,
+    for j=1:rows
         matrix(j,3)=2;
     end
     
     n=1;
-    for j=1:rows,
+    for j=1:rows
         matrix(j,2)=2^n;
         n = n+1;
     end   
     
-    if mod(p,2)==0,
+    if mod(p,2)==0
         k=rows-1;
-        for j=1:rows,
+        for j=1:rows
             matrix(j,1)=sqrt(M)*2^k;
             k = k-1;
         end
        
     else
         k=rows-1;
-        for j=1:rows,
+        for j=1:rows
             matrix(j,1)=sqrt(M/2)*2^k;
             k = k-1;
         end
@@ -73,21 +73,21 @@ else if Stages ==3 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1,
     m = matrix;
 
 % Four stages decimation
-else if Stages == 4 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1,
+else if Stages == 4 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1
     columns = Stages;
     rows = zeros;
     p=log2(M);
     
-    if p == 4,
+    if p == 4
         rows = 1;
-    elseif OrCondition(5,9,p)==1,
+    elseif OrCondition(5,9,p)==1
         rows = p-4;
-    elseif OrCondition(10,11,p)==1,
+    elseif OrCondition(10,11,p)==1
         rows = p-3;
-    elseif p == 12,
+    elseif p == 12
         rows = p-2;
-    elseif OrCondition(13,15,p)==1,
-        if mod(ceil(p/2),2)==0,
+    elseif OrCondition(13,15,p)==1
+        if mod(ceil(p/2),2)==0
             rows = ceil(p/2)*2;
         else
             rows = fix(p/2)*2;
@@ -96,18 +96,18 @@ else if Stages == 4 & rem(log2(M),2) == 0 | rem(log2(M),2) == 1,
 end
 
 matrix=zeros(rows,columns);
-    if p==4,
+    if p==4
         m=[2,2,2,2];
     else
     
-    for j=1:rows,
+    for j=1:rows
         matrix(j,4)=2;
     end
     
     h=1;
     k=fix(p/2)-1;
-        if mod(p,2)==0,
-            for j = 1:round(p/2)-1,
+        if mod(p,2)==0
+            for j = 1:round(p/2)-1
                 matrix(j,3)=2;
                 matrix(j,2)=2^h;
                 h=h+1;
@@ -135,7 +135,7 @@ matrix=zeros(rows,columns);
                 k = k-1;
             end
             
-            if p>13,
+            if p>13
                 h=4;
                 matrix(rows,3)=16;
                 matrix(rows,2)=2^h;
@@ -144,7 +144,7 @@ matrix=zeros(rows,columns);
             end
           
         else
-               for j = 1:fix(p/2)-1,
+               for j = 1:fix(p/2)-1
                 matrix(j,3)=2;
                 matrix(j,2)=2^h;
                 h=h+1;
@@ -155,7 +155,7 @@ matrix=zeros(rows,columns);
      
             h=2;
             k=fix(p/2)-1;
-            for j = fix(p/2):(fix(p/2)+(k-2)),
+            for j = fix(p/2):(fix(p/2)+(k-2))
                 matrix(j,3)=4;
                 matrix(j,2)=2^h;
                 h=h+1;
@@ -166,7 +166,7 @@ matrix=zeros(rows,columns);
             
             h=3;
             k=fix(p/2)-1;
-            for j = (fix(p/2)+(k-1)):(fix(p/2)+(k-1)+(k-4)),
+            for j = (fix(p/2)+(k-1)):(fix(p/2)+(k-1)+(k-4))
                 matrix(j,3)=8;
                 matrix(j,2)=2^h;
                 h=h+1;
@@ -175,10 +175,10 @@ matrix=zeros(rows,columns);
             end
            
      
-            if p>12,
+            if p>12
             h=4;
             k=fix(p/2)-1;
-            for j = (fix(p/2)+(k-1)+(k-3)):rows,
+            for j = (fix(p/2)+(k-1)+(k-3)):rows
                 matrix(j,3)=16;
                 matrix(j,2)=2^h;
                 h=h+1;

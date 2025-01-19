@@ -141,18 +141,27 @@ data    = ChkArgs(varargin,nin);
         n = filter_lengths_rg;
     end
 
-    filter_stages_mb=struct('b', []);
+    filter_stages_mb=struct('b', []); %its name is 'b'
+
+% We note that
+% Function practical specifications:
+%   1. Decimation factors must be in descending factors
+%   2. Input decimation factor must be power of 2
+%   3. Last stage of decimation is always 2
+%   4. Number of decimation stages are between 2-4
 
     for o = 1 : data.K
-        if o == data.K
+        
+        if o == data.K %last stage will be the half-band filter (decimation factor = 2)
             filter_lengths_mb(o) = length(HB_stage); 
             filter_coefficients_mb(o, 1:filter_lengths_mb(o))=HB_stage; %multi-band
         else
-            if mod(lengths(o), 2) == 0 %even positions
-                filter_stages_mb(o).b = remez(n(o), f(o,1:lengths(o)), a(o,1:lengths(o)), w(o,1:lengths(o)/2));
-                filter_lengths_mb(o) = length(filter_stages_mb(o).b);
+            if mod(lengths(o), 2) == 0 %even stage
+                filter_stages_mb(o).b = remez(n(o), f(o,1:lengths(o)), a(o,1:lengths(o)), w(o,1:lengths(o)/2)); %obtain optimal coefficients (can use FIRPM)
+                filter_lengths_mb(o) = length(filter_stages_mb(o).b); %lengths
                 filter_coefficients_mb(o, 1:filter_lengths_mb(o))=filter_stages_mb(o).b;
-            else %odd positions
+
+            else %odd stage
                 filter_stages_mb(o).b = remez(n(o), f(o,1:lengths(o)-1), a(o,1:lengths(o)-1), w(o,1:(lengths(o)-1)/2));
                 filter_lengths_mb(o) = length(filter_stages_mb(o).b);
                 filter_coefficients_mb(o, 1:filter_lengths_mb(o))=filter_stages_mb(o).b;
@@ -166,12 +175,14 @@ data    = ChkArgs(varargin,nin);
 
     % Output filter length and coefficients due to the the specified structure
 
-    if data.Filter_Type == 'rg'
+    if data.Filter_Type == 'rg' %regular FIR
         data.filter_coefficients    = filter_coefficients_rg;
         data.filter_lengths         = filter_lengths_rg;
-    elseif data.Filter_Type == 'mb' & data.K ~= 1
+
+    elseif data.Filter_Type == 'mb' & data.K ~= 1 %multi-band FIR
         data.filter_coefficients   = filter_coefficients_mb;
         data.filter_lengths         = filter_lengths_mb;
+        
     else
         data.filter_lengths = nan;
         data.filter_coefficients = nan;

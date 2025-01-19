@@ -40,7 +40,7 @@ width=[];
 
 v = Factorize(data.OSR);
 
-if length(v) <= 2,
+if length(v) <= 2
     fprintf('This decimation factor cannot hold more than 2 stages\n');
     fprintf('Please change Stages to 2 only\n');
     data.min_RT = nan;
@@ -48,8 +48,8 @@ if length(v) <= 2,
 end    
     decimation_matrices = struct('matrix', [], 'sizes', []);
 
-    for i = 1 : length(data.Stages),
-        if data.POT == 1,
+    for i = 1 : length(data.Stages)
+        if data.POT == 1
             decimation_matrices(i).matrix = DecimationMatrix(data.OSR,data.Stages(i));
         else
             decimation_matrices(i).matrix = DecimationMatrixNonPOT(data.OSR,data.Stages(i));
@@ -60,9 +60,9 @@ end
 
     computationaleffort = struct('RT', [], 'Stages', []);
     l = 0;
-    for j = 1 : length(data.Stages),
+    for j = 1 : length(data.Stages)
         matrix = decimation_matrices(j).matrix;
-         for k = 1 : depth(j),
+         for k = 1 : depth(j)
              l=l+1;
              M = matrix(k,:);
              RT(l) = ComputationalEffort(data.Fs, data.OSR, data.delta_F, data.Stages(j), M, data.rp, data.rc);
@@ -70,10 +70,11 @@ end
              computationaleffort(l).Stages = M;
          end
     end
-
-    data.min_RT = min(RT);
-    for o = 1 : length(RT),
-        if RT(o) == data.min_RT,
+    
+    %get minimum computatinal effort
+    data.min_RT = min(RT); 
+    for o = 1 : length(RT)
+        if RT(o) == data.min_RT
             data.min_stage = computationaleffort(o).Stages;
         end
     end
@@ -83,17 +84,17 @@ end
     color = ['b', 'r', 'k', 'g', 'c', 'y', 'm'];
     StagesVector = [];
     
-    if data.plot_RT == 1,        
-        if sum(x) > 1,
+    if data.plot_RT == 1       
+        if sum(x) > 1
           FIG = figure('Name', 'Computational Effort', 'NumberTitle' , 'off');
-            for i = 1 : length(computationaleffort),    
-                if length(computationaleffort(i).Stages) == 2,
+            for i = 1 : length(computationaleffort)    
+                if length(computationaleffort(i).Stages) == 2
                     clr = color(1);
                     StagesVector(i) = 2;
-                elseif length(computationaleffort(i).Stages) == 3,
+                elseif length(computationaleffort(i).Stages) == 3
                     clr = color(2);
                     StagesVector(i) = 3;
-                elseif length(computationaleffort(i).Stages) == 4,
+                elseif length(computationaleffort(i).Stages) == 4
                     clr = color(3);
                     StagesVector(i) = 4;
                 end
@@ -201,7 +202,7 @@ if ~isfield(data,'rc')
     data.rc = 0.001;
 end
 
-if ~isfield(data,'Stages'),
+if ~isfield(data,'Stages')
     error('Decimation stages is not define');
 end
 

@@ -23,14 +23,14 @@ rp_K = rp/K;
 
 D_ripples = (5.309e-03*log10(rp_K)^2 + 7.114e-02*log10(rp_K) - 0.4761)*log10(rc) - (2.66e-03*log10(rp_K)^2 + 0.5941*log10(rp_K) + 0.4278);
 
-if K == 1,
-    for i = 1 : K,
+if K == 1
+    for i = 1 : K
         alpha   = 2/(delta_F * prod(M(1:i)));
         beta(i) = M(i)/((prod(M(1:i))) * (1 - (((2-delta_F)/(2*OSR)) * prod(M(1:i)))));
         S       = alpha+sum(beta);
     end
 else
-    for i = 1 : K-1,
+    for i = 1 : K-1
         alpha   = 2/(delta_F * prod(M(1:i)));
         beta(i) = M(i)/((prod(M(1:i))) * (1 - (((2-delta_F)/(2*OSR)) * prod(M(1:i)))));
         S       = alpha+sum(beta);
@@ -39,6 +39,6 @@ end
 
 RT = D_ripples * S * Fs;
 
-if nargin > 7 & print_RT == 1,
+if nargin > 7 & print_RT == 1
     fprintf('The computational effort =%d\n', RT);
 end
