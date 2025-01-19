@@ -33,7 +33,7 @@ data    = ChkArgs(varargin,nin);
 
 % Intialization for some variablles in the function
     wi = [];
-    filter_lengths_rg = []; %regular filter
+    filter_lengths_rg = [];
     filter_coefficients_rg = [];
     
 % Turn off the warning of Divide by zero
@@ -99,11 +99,11 @@ data    = ChkArgs(varargin,nin);
             
             %optimal FIR filter design based on approximated values
             if nargin == 11 & mb_taps_lengths ~= 0          
-                filter_stages_rg(j).b  = remez(mb_taps_lengths(j), filter(j).fo, filter(j).ao, filter(j).w);%with desired tap lengths
+                filter_stages_rg(j).b  = remez(mb_taps_lengths(j), filter(j).fo, filter(j).ao, filter(j).w);
             else
-                filter_stages_rg(j).b  = remez(filter(j).n, filter(j).fo, filter(j).ao, filter(j).w);%with MATLAB default tap lengths
+                filter_stages_rg(j).b  = remez(filter(j).n, filter(j).fo, filter(j).ao, filter(j).w);
             end
-        else %for the up comming stages (Fs_k+1 = Fs/(M_1xM_2x...M_k))
+        else %for the 
             [filter(j).n, filter(j).fo, filter(j).ao, filter(j).w] = remezord([Fp(j) Fc(j)], [1 0], [Rp(j) Rc(j)], data.Fs/prod(data.M(1:j-1)));
             if nargin == 11 & mb_taps_lengths ~= 0            
                 filter_stages_rg(j).b  = remez(mb_taps_lengths(j), filter(j).fo, filter(j).ao, filter(j).w);
@@ -111,27 +111,27 @@ data    = ChkArgs(varargin,nin);
                 filter_stages_rg(j).b  = remez(filter(j).n, filter(j).fo, filter(j).ao, filter(j).w);
             end
         end
-            filter_lengths_rg(j) = length(filter_stages_rg(j).b); %get filter length
-            filter_coefficients_rg(j, 1:filter_lengths_rg(j))=filter_stages_rg(j).b; %get coefficients
+            filter_lengths_rg(j) = length(filter_stages_rg(j).b);
+            filter_coefficients_rg(j, 1:filter_lengths_rg(j))=filter_stages_rg(j).b;
     end
 
-    % Design decimator filters in a multi-band FIR structure
-    if nargin >= 10 & data.mb_type ~= 0
-        [f, a, w, lengths] = MultiBandFilters(data.K, data.M, data.OSR, data.mb_type);
-    else
-        [f, a, w, lengths] = MultiBandFilters(data.K, data.M, data.OSR, 'WB');
-    end
+% Design decimator filters in a multi-band FIR structure
+if nargin >= 10 & data.mb_type ~= 0
+    [f, a, w, lengths] = MultiBandFilters(data.K, data.M, data.OSR, data.mb_type);
+else
+    [f, a, w, lengths] = MultiBandFilters(data.K, data.M, data.OSR, 'WB');
+end
 
-    % Designing Half-band stage
+% Designing Half-band stage
     N = 25;    % Filter Length
-    P = (N+1)/2; % Filter Peak position
+    P = (N+1)/2; % Filter Peak
     Filter_Coeff_Length = [1:N];
     Filter_Coeff_Length = Filter_Coeff_Length - P;
     HB_Sinc_Filter = sin(pi*Filter_Coeff_Length/2)./(pi*Filter_Coeff_Length);
     HB_Sinc_Filter(P)=.5;
-    thewin=window(@hamming, N); %returns the n-point Hamming window
+    thewin=window(@hamming, N);
     HB_Window = HB_Sinc_Filter .* thewin';
-    HB_Filter = HB_Window/sum(HB_Window); %normalized
+    HB_Filter = HB_Window/sum(HB_Window);
     HB_stage = ZeroOutCoeff(HB_Filter);
 
 
@@ -140,45 +140,45 @@ data    = ChkArgs(varargin,nin);
     else
         n = filter_lengths_rg;
     end
-
+    
     filter_stages_mb=struct('b', []);
 
     for o = 1 : data.K
-        if o == data.K
-            filter_lengths_mb(o) = length(HB_stage); 
-            filter_coefficients_mb(o, 1:filter_lengths_mb(o))=HB_stage; %multi-band
-        else
-            if mod(lengths(o), 2) == 0 %even positions
+       if o == data.K
+            filter_lengths_mb(o) = length(HB_stage);
+            filter_coefficients_mb(o, 1:filter_lengths_mb(o))=HB_stage;
+       else
+           if mod(lengths(o), 2) == 0
                 filter_stages_mb(o).b = remez(n(o), f(o,1:lengths(o)), a(o,1:lengths(o)), w(o,1:lengths(o)/2));
                 filter_lengths_mb(o) = length(filter_stages_mb(o).b);
                 filter_coefficients_mb(o, 1:filter_lengths_mb(o))=filter_stages_mb(o).b;
-            else %odd positions
+           else
                 filter_stages_mb(o).b = remez(n(o), f(o,1:lengths(o)-1), a(o,1:lengths(o)-1), w(o,1:(lengths(o)-1)/2));
                 filter_lengths_mb(o) = length(filter_stages_mb(o).b);
                 filter_coefficients_mb(o, 1:filter_lengths_mb(o))=filter_stages_mb(o).b;
-            end
-        end
+           end
+       end
     end
-
+    
     if data.K == 1 & data.Filter_Type == 'mb'
         fprintf('WARNING: You cannot use Multi-band structure for single decimation stage \n');
     end
 
-    % Output filter length and coefficients due to the the specified structure
+% Output filter length and coefficients due to the the specified structure
 
-    if data.Filter_Type == 'rg'
-        data.filter_coefficients    = filter_coefficients_rg;
-        data.filter_lengths         = filter_lengths_rg;
-    elseif data.Filter_Type == 'mb' & data.K ~= 1
-        data.filter_coefficients   = filter_coefficients_mb;
-        data.filter_lengths         = filter_lengths_mb;
-    else
+     if data.Filter_Type == 'rg'
+         data.filter_coefficients    = filter_coefficients_rg;
+         data.filter_lengths         = filter_lengths_rg;     
+     elseif data.Filter_Type == 'mb' & data.K ~= 1
+         data.filter_coefficients   = filter_coefficients_mb;
+         data.filter_lengths         = filter_lengths_mb; 
+     else    
         data.filter_lengths = nan;
         data.filter_coefficients = nan;
-        fprintf('Not a Recognized Filter Type \n');
-    end
+        fprintf('Not a Recognized Filter Type \n');   
+     end
 
-%% Plotting decimator filters frequency response option
+% Plotting decimator filters frequency response option
 
     if nargin ~= 4 & data.Filter_Type == 'mb' & data.K == 1
         return
@@ -208,8 +208,7 @@ data    = ChkArgs(varargin,nin);
         end
     end
     
-%%
-%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
 % Subfunction %
 %%%%%%%%%%%%%%%  
 % This function is implemented by: 

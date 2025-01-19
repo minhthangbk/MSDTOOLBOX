@@ -8,8 +8,8 @@
 %thangnm35
 %1/ run the file mod4_rc_CIFF to obtain the SDM filter output and save it to
 %a file 
-%2/ run the file DSN_EXP_01_thangnm35 (it will load the SDM filter output) to compute obtimal decimation factor and filter
-%coefficients for each stage
+%2/ run the file DSN_EXP_01_thangnm35 (it will load the obtimal decimation and filter
+%coefficients
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Cell-1: Load the input data %
@@ -68,7 +68,6 @@ Pass_Stop   = false;        % Flag to determine that base-band frequency is cons
                             % passband or stopband frequency corner.
                             % false -> Pass
                             % true  -> Stop
-% q           = [[18 16 14 13 12 10 8]; [18 16 14 13 12 10 8]];
 q           = [[18 16 14 13 12 10 8]; [18 16 14 13 12 10 8]];
                             % This matrix holds the quantization bit widths
                             % for each decimation stages, since , in this

@@ -36,7 +36,7 @@ function [f, a, w, lengths] = MultiBandFilters(K, M, OSR, type)
 %           number of the stage, which means there is no influence of the
 %           rest of the stages in each individual stage.
 %
-%       K:      Number od decimation stages
+%       K:      Number of decimation stages
 %       M:      Decimation stage factor for each individual stage
 %       OSR:    Oversampling ratio
 %       type :  'NB' Narrow Band
@@ -46,74 +46,74 @@ function [f, a, w, lengths] = MultiBandFilters(K, M, OSR, type)
 %       lengths:   Defines the frequency band length for each filter stage,
 %                  it is only used by the function named 'DecimationFilters'
 
-if strcmp(type, 'NB'),
-    
-    for k = 1 : K-1,
+if strcmp(type, 'NB')
+
+    for k = 1 : K-1
         z = 0;
         y = 0;
         lengths(k) = prod(M(1:k))+2;
-            for l = 1 : prod(M(1:k))+2,
-                if l == 1,
-                    f(k,l) = 0;
-                    a(k,l)=1;
-                else if l == 2
+        for l = 1 : prod(M(1:k))+2
+            if l == 1
+                f(k,l) = 0;
+                a(k,l)=1;
+            else if l == 2
                     f(k,l) = 1/OSR;
                     a(k,l)=1;
-                        else if mod(l,2)==1
-                            f(k,l) = ((2+z)/prod(M(1:k)))-(1/OSR);
-                            z = z + 2;
-                                else if mod(l,2)==0
-                                    f(k,l) = ((2+y)/prod(M(1:k)))+(1/OSR);
-                                    y = y + 2;
-                                        if l == prod(M(1:k))+2,
-                                            f(k,l) = 1;
-                                        end
-                                            a(k,l)=0;
-                                    end
-                            end
+            else if mod(l,2)==1
+                    f(k,l) = ((2+z)/prod(M(1:k)))-(1/OSR);
+                    z = z + 2;
+            else if mod(l,2)==0
+                    f(k,l) = ((2+y)/prod(M(1:k)))+(1/OSR);
+                    y = y + 2;
+                    if l == prod(M(1:k))+2
+                        f(k,l) = 1;
                     end
-                end
-            end   
+                    a(k,l)=0;
+            end
+            end
+            end
+            end
+        end
     end
-    
-elseif strcmp(type,'WB'),
-    
-    for k = 1 : K-1,
+
+elseif strcmp(type,'WB')
+
+    for k = 1 : K-1 %for each decimation stage
         z = 0;
         y = 0;
         lengths(k) = M(k)+2; %
-            for l = 1 : M(k)+2; %
-                if l == 1,
-                    f(k,l) = 0;
-                    a(k,l)=1;
-                else if l == 2
+        for l = 1 : M(k)+2 %for each decimaton
+            if l == 1
+                f(k,l) = 0;
+                a(k,l)=1;
+            else if l == 2
                     f(k,l) = 1/(2*M(k));
                     %f(k,l) = 1/(M(k))-1/(2*OSR);
                     a(k,l)=1;
-                        else if mod(l,2)==1
-                            f(k,l) = (2+z)/M(k)-(1/(2*M(k)));
-                            z = z + 2;
-                                else if mod(l,2)==0
-                                    f(k,l) = (2+y)/M(k)+(1/(2*M(k)));
-                                    y = y + 2;
-                                        if l == M(k)+2; %
-                                            f(k,l) = 1;
-                                        end
-                                            a(k,l)=0;
-                                    end
-                            end
+            else if mod(l,2)==1 %odd
+                    f(k,l) = (2+z)/M(k)-(1/(2*M(k)));
+                    z = z + 2;
+            else if mod(l,2)==0 %even
+                    f(k,l) = (2+y)/M(k)+(1/(2*M(k)));
+                    y = y + 2;
+                    if l == M(k)+2 %
+                        f(k,l) = 1;
                     end
-                end
-            end   
+                    a(k,l)=0;
+            end
+            end
+            end
+            end
+        end
     end
 end
     
         
    c0 = 0.00000048003; % Added 00
    
-   for m = 1 : K-1,
+   for m = 1 : K-1
        x=0;
-            for x = 1 : max(lengths)/2,
+            for x = 1 : max(lengths)/2
                 wi(m,x) = c0/(2*sin(pi*f(m,2+x)/2))^3;
                 x = x + 2;
             end

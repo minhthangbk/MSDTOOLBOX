@@ -10,7 +10,7 @@ function ncoeff = NormalizedCoeff(coeff, n, c)
 %
 %       ncoeff  : scaled coefficients
 
-if nargin == 2,
+if nargin == 2
     max_value = 2^(n-1)-1;
     ncoeff = round(coeff.*max_value);
 else
